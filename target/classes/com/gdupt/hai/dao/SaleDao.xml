@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdupt.hai.dao.SaleDao">
+    <!--查询所有销售情况-->
+    <select id="getSales" resultType="com.gdupt.hai.domain.Sale" resultMap="saleMap">
+        select * from sale order by sale_date desc limit #{page},#{size};
+    </select>
+
+    <!--查询总量-->
+    <select id="count" resultType="int">
+        select count(1) from sale;
+    </select>
+
+    <select id="getSaleByName" resultType="com.gdupt.hai.domain.Sale" resultMap="saleMap">
+        select * from sale where goods_name like "%" #{goodsName}  "%";
+    </select>
+
+    <select id="findSaleDate" resultType="com.gdupt.hai.domain.Stock" resultMap="saleMap">
+        select  * from sale where sale_date = #{date}
+    </select>
+
+    <select id="findSaleYear" resultType="com.gdupt.hai.domain.Stock" resultMap="saleMap">
+        select * from sale where year(sale_date)=#{date};
+    </select>
+
+    <select id="findSaleMonth" resultType="com.gdupt.hai.domain.Stock" resultMap="saleMap">
+        select * from sale where year(sale_date)=#{year} and month(sale_date)=#{month};
+    </select>
+
+    <select id="findSaleRange" resultType="com.gdupt.hai.domain.Stock" resultMap="saleMap">
+        select * from sale where sale_date between #{start} and #{end};
+    </select>
+
+    <select id="findSales" resultType="java.util.Map">
+        <!--select s.goods_Id as goodsId,s.goods_name as goodsName,s.cate as category,IFNULL(sum(s.sales),0) as sales
+        from sale s
+        where 1 = 1
+        <if test="date != null">
+            and DATE_FORMAT( sale_date, '%Y-%m' ) = #{date}
+        </if>
+        group by s.goods_Id
+        ORDER BY sales DESC
+        LIMIT 0,10-->
+        SELECT SUM(sales) as value,goods_name as goods
+        FROM sale
+        where DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt; date(sale_date)
+        GROUP BY goods_id
+        ORDER BY value desc limit 0,10;
+    </select>
+
+    <select id="findCate" resultType="java.util.Map">
+         <!--SELECT s.cate as name,IFNULL(SUM(s.sales),0) as value
+          from sale s
+         WHERE 1=1
+             and DATE_FORMAT(s.sale_date,'%Y-%m-%d') = #{date }
+         GROUP BY s.cate-->
+        SELECT SUM(sales) as value,cate as name
+        FROM sale
+        where DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt; date(sale_date)
+        GROUP BY cate
+    </select>
+
+    <!--查询当天的销售额-->
+    <select id="getSalesToday" resultType="double">
+        select IFNULL(SUM(total),0) from sale where to_days(sale_date) = to_days(now());
+    </select>
+
+    <!--查询本周销售额-->
+    <select id="getSaleWeek" resultType="double">
+        SELECT IFNULL(SUM(total),0) FROM  sale WHERE YEARWEEK( date_format(  sale_date,'%Y-%m-%d' ) ) = YEARWEEK( now() ) ;
+    </select>
+
+    <!--查询本月销售额-->
+    <select id="getSaleMonth" resultType="double">
+        SELECT IFNULL(SUM(total),0) FROM  sale WHERE DATE_FORMAT( sale_date, '%Y%m' ) = DATE_FORMAT( CURDATE( ) ,'%Y%m' )
+    </select>
+
+    <!--查询本季度销售额-->
+    <select id="getSaleQuarter" resultType="double">
+        select IFNULL(SUM(total),0) from sale where QUARTER(sale_date)=QUARTER(now());
+    </select>
+
+
+    <!--查询过去7天的销售额-->
+    <!-- < 符号在XML中无法被解析，需要使用实体引用&lt;  -->
+    <select id="findSaleSevenDay" resultType="java.util.Map">
+        SELECT SUM(total) as value , DATE_FORMAT(sale_date,'%m-%d') as date
+        FROM sale
+        where DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt; date(sale_date)
+        GROUP BY sale_date
+        ORDER BY sale_date;
+    </select>
+
+    <!--今年各个月份的销售额统计-->
+    <select id="getSalesMonth" resultType="java.util.Map">
+        SELECT SUM(total) as data ,DATE_FORMAT(sale_date,'%Y-%m') as date
+        FROM sale
+        WHERE YEAR(  sale_date ) = YEAR( NOW( ) )
+        GROUP BY DATE_FORMAT(sale_date,'%Y-%m')
+        ORDER BY sale_date
+    </select>
+
+    <resultMap id="saleMap" type="com.gdupt.hai.domain.Sale">
+        <id property="goodsId" column="goods_Id"></id>
+        <result property="goodsName" column="goods_name"></result>
+        <result property="category" column="cate"></result>
+        <result property="saleDate" column="sale_date"></result>
+    </resultMap>
+</mapper>
+   

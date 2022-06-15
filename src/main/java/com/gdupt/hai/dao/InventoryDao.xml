@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdupt.hai.dao.InventoryDao">
+    <select id="getInventory" resultType="com.gdupt.hai.domain.Inventory" resultMap="inventory">
+        select * from inventory limit #{page}, #{size}
+    </select>
+
+    <select id="count" resultType="int">
+        select count(1) from inventory
+    </select>
+
+    <select id="queryInventory" resultType="com.gdupt.hai.domain.Inventory" resultMap="inventory">
+        select  * from inventory where goods_name = #{goodsName} or goods_id = #{goodsId};
+    </select>
+
+    <delete id="removeInventory">
+        delete from inventory where goods_id = #{goodsId};
+    </delete>
+
+    <insert id="addInventory" >
+        insert into import values(#{importBill},#{goodsName},#{goodsId},#{proffer},#{price},#{quantity},#{total},#{date});
+    </insert>
+
+    <update id="updateInventory">
+        update inventory set in_date=#{date},count=#{count} where goods_id=#{goodsId};
+    </update>
+
+    <select id="exitInventory" resultMap="inventory">
+        select * from inventory where goods_id = #{goodsId}
+    </select>
+
+    <insert id="increaseInventory" >
+        insert into inventory values(#{goodsId},#{goodsName},#{category},#{date},#{count})
+    </insert>
+
+    <resultMap id="inventory" type="com.gdupt.hai.domain.Inventory">
+        <id property="goodsId" column="goods_id"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="category" column="cate"/>
+        <result property="date" column="in_date"/>
+    </resultMap>
+
+
+
+</mapper>
+   

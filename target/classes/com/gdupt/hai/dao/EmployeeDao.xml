@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdupt.hai.dao.EmployeeDao">
+
+    <!--查询所有员工信息-->
+    <select id="selectAllEmp" resultType="com.gdupt.hai.domain.Employee" resultMap="empMap">
+        select * from emp limit #{page},#{size};
+    </select>
+
+    <!--查询总数-->
+    <select id="count" resultType="int">
+        select count(1) from emp
+    </select>
+
+
+    <!--通过姓名查找员工-->
+    <select id="selectEmpByName" resultType="com.gdupt.hai.domain.Employee" resultMap="empMap">
+        select * from emp where name = #{name};
+    </select>
+
+    <!--通过员工编号修改相应的员工信息-->
+    <update id="editEmp">
+        update emp set name=#{name},id_num=#{idNo},sex=#{sex},age=#{age},birth=#{birth},
+                    telephone=#{telephone},dept=#{dept},address=#{address},work_date=#{workDate},
+                    job=#{job} where emp_num=#{eno};
+    </update>
+
+    <!--通过员工编号删除相应员工信息-->
+    <delete id="deleteEmp">
+        delete from emp where emp_num=#{empNo};
+    </delete>
+
+    <!--判断员工信息是否已存在-->
+    <select id="isEmpExist" resultType="com.gdupt.hai.domain.Employee" resultMap="empMap">
+        select * from emp where emp_num=#{eno} or id_num=#{idNo};
+    </select>
+
+    <!--添加员工-->
+    <insert id="addEmployee">
+        insert into emp(emp_num,name,id_num,sex,age,birth,telephone,dept,dept_no,address,work_date,job)
+                values (#{eno},#{name},#{idNo},#{sex},#{age},#{birth},#{telephone},#{dept},#{deptNo},#{address},#{workDate},#{job});
+    </insert>
+
+    <!--获取部门列表-->
+    <select id="getDept" resultType="java.util.Map">
+        select dept_no as 'dept_no',dept_name as 'dept' from dept;
+    </select>
+
+    <resultMap id="empMap" type="com.gdupt.hai.domain.Employee">
+        <id property="eno" column="emp_num"/>
+        <result property="idNo" column="id_num"/>
+        <result property="deptNo" column="dept_no"/>
+        <result property="workDate" column="work_date"/>
+    </resultMap>
+
+
+
+
+
+</mapper>
+   

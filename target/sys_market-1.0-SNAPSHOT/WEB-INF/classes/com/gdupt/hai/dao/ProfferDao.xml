@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdupt.hai.dao.ProfferDao">
+
+    <!--分页显示供应商-->
+    <select id="selectAllSupply" resultType="com.gdupt.hai.domain.Proffer">
+        select * from proffer limit #{page},#{size};
+    </select>
+
+    <select id="count" resultType="int">
+        select count(1) from proffer;
+    </select>
+
+    <!--添加供应商信息前判断是否已存在-->
+    <select id="exitProffer" resultType="com.gdupt.hai.domain.Proffer">
+        select * from proffer where profferId=#{profferId} or fullName=#{fullName};
+    </select>
+
+    <insert id="addNewProffer">
+        insert into proffer values(#{profferId},#{fullName},#{contacts},#{phone},#{address},#{account});
+    </insert>
+
+    <update id="editProffer">
+        update proffer set fullName=#{fullName},contacts=#{contacts},phone=#{phone},account=#{account} where profferId=#{profferId};
+    </update>
+
+    <!--删除供应商-->
+    <delete id="removeProffer">
+        delete from proffer where profferId=#{profferId};
+    </delete>
+
+    <!--查询供应商-->
+    <select id="getProfferByName" resultType="com.gdupt.hai.domain.Proffer">
+        select * from proffer where fullName like "%" #{profferName}  "%" ;
+    </select>
+</mapper>
+   

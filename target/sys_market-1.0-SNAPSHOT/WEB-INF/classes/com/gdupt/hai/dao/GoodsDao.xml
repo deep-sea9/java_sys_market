@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdupt.hai.dao.GoodsDao">
+
+   <!--查询所有商品-->
+    <select id="selectAllGoods" resultType="com.gdupt.hai.domain.Goods" resultMap="goodsMap">
+        select * from goods limit #{page},#{size};
+    </select>
+
+    <select id="count" resultType="int">
+        select count(1) from goods
+    </select>
+
+    <delete id="removeGoods">
+        delete from goods where goods_id = #{goodsId};
+    </delete>
+
+    <!--通过商品名称查询对应的商品信息-->
+    <select id="getGoodsByName" resultType="com.gdupt.hai.domain.Goods" resultMap="goodsMap">
+        select * from goods where goods_name like "%" #{goodsName}  "%";
+    </select>
+
+    <!--修改商品信息-->
+    <update id="editGoods">
+        update goods set goods_name=#{goodsName},spec=#{spec},measurement=#{measurement},price=#{price},cate_id=#{cateId},status=#{status} where goods_id=#{goodsId};
+    </update>
+
+    <!--判断商品是否存在-->
+    <select id="isGoodsExist" resultType="com.gdupt.hai.domain.Goods">
+        select * from goods where goods_id=#{goodsId};
+    </select>
+
+    <!--插入新商品-->
+    <insert id="addNewGoods">
+        insert into goods(goods_id,goods_name,spec,measurement,price,cate_id,status,count)
+        values(#{goodsId},#{goodsName},#{spec},#{measurement},#{price},#{cateId},#{status},#{count});
+    </insert>
+
+    <!--获取所有分类-->
+    <select id="getCategory" resultType="java.util.Map">
+        select cate_id as 'cate_id',cate as 'cate' from goods_cate;
+    </select>
+
+    <select id="updateLogo">
+      update goods set goods_logo=#{goodsLogo}
+      where where goods_id=#{goodsId};
+  </select>
+
+
+
+    <!--设置结果的映射类型-->
+    <resultMap id="goodsMap" type="com.gdupt.hai.domain.Goods">
+        <!--id标签映射主键
+            column = 数据库的列名
+            property = 结果集对应的数据库列名的映射名
+        -->
+        <id property="goodsId" column="goods_id"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="cateId" column="cate_id" />
+    </resultMap>
+
+</mapper>
+   

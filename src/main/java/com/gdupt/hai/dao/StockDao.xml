@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdupt.hai.dao.StockDao">
+
+    <select id="getStock" resultType="com.gdupt.hai.domain.Stock" resultMap="stock">
+        select * from import order by date desc;
+    </select>
+
+    <select id="selectDate" resultType="com.gdupt.hai.domain.Stock" resultMap="stock">
+        select  * from import where date = #{date}
+    </select>
+
+    <select id="selectYear" resultType="com.gdupt.hai.domain.Stock" resultMap="stock">
+        select * from import where year(date)=#{date};
+    </select>
+
+    <select id="selectMonth" resultType="com.gdupt.hai.domain.Stock" resultMap="stock">
+        select * from import where year(date)=#{year} and month(date)=#{month};
+    </select>
+
+    <select id="selectDateRange" resultType="com.gdupt.hai.domain.Stock" resultMap="stock">
+        select * from import where date between #{startDate} and #{endDate};
+    </select>
+
+    <!--统计近七天供应商供货情况-->
+    <select id="findSupplyInput" resultType="java.util.Map">
+        SELECT   SUM(total) as value,proffer as name
+        FROM import
+        where DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt; date(date)
+        GROUP BY proffer
+    </select>
+
+    <select id="getInputToday" resultType="double">
+        select IFNULL(SUM(total),0) from import where to_days(date) = to_days(now());
+    </select>
+
+    <resultMap id="stock" type="com.gdupt.hai.domain.Stock">
+        <result property="goodsName" column="goods_name"/>
+        <result property="goodsId" column="goods_id"/>
+    </resultMap>
+
+</mapper>
+   
